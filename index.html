@@ -2,56 +2,47 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Offline Ad Loop</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Offline Ad Player</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <style>
-  html,body {
-    margin:0; padding:0; width:100%; height:100%;
-    background:#000; overflow:hidden;
+  html,body{
+    margin:0;padding:0;width:100%;height:100%;
+    background:#000;overflow:hidden;
   }
-  #slideshow {
-    width:864px; height:384px;
-    display:flex; justify-content:center; align-items:center;
-    margin:auto; position:absolute; top:0; left:0; right:0; bottom:0;
-  }
-  img {
-    width:100%; height:100%; object-fit:cover;
+  #slideshow{
+    width:864px;height:384px;
+    display:flex;justify-content:center;align-items:center;
+    margin:auto;position:absolute;top:0;bottom:0;left:0;right:0;
+    color:white;font-size:2rem;font-weight:700;
+    font-family:system-ui,Arial,sans-serif;
+    text-shadow:0 2px 8px rgba(0,0,0,0.6);
   }
 </style>
 </head>
 <body>
-  <div id="slideshow"><img id="adImage" src="" alt="Ad"></div>
+<div id="slideshow">Loading…</div>
+<script>
+const slides = [
+  {text:"WELCOME TO LEVELUP",bg:"#16a34a",duration:5},
+  {text:"COURT SPECIALS THIS WEEKEND",bg:"#2563eb",duration:5},
+  {text:"JOIN OUR MEMBERSHIP TODAY!",bg:"#eab308",color:"#000",duration:5}
+];
 
-  <script>
-    // ---- Replace or add new ads here ----
-    const ads = [
-      {
-        duration: 5,
-        src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAIAAADaO5y9AAAACXBIWXMAAAsTAAALEwEAmpwYAAABKElEQVR4nO3TsQkAIBAEwYf9d9bHclAgYZP7cL8BNkmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJPm2W0h4bSkAOAAAAABJRU5ErkJggg==" // gray placeholder
-      },
-      {
-        duration: 5,
-        src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAIAAADaO5y9AAAACXBIWXMAAAsTAAALEwEAmpwYAAABM0lEQVR4nO3TsQkAIBAEwYf9d9bHclAgYZP7cL8BNkmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJPm2W0h4bSkAOAAAAABJRU5ErkJggg==" // same placeholder
-      },
-      {
-        duration: 5,
-        src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAIAAADaO5y9AAAACXBIWXMAAAsTAAALEwEAmpwYAAABOklEQVR4nO3TsQkAIBAEwYf9d9bHclAgYZP7cL8BNkmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJPm2W0h4bSkAOAAAAABJRU5ErkJggg==" // same placeholder
-      }
-    ];
+let index = 0;
+const box = document.getElementById("slideshow");
 
-    // ---- Core player ----
-    let index = 0;
-    const img = document.getElementById("adImage");
+function showSlide(){
+  const s = slides[index];
+  box.style.background = s.bg;
+  box.style.color = s.color || "#fff";
+  box.textContent = s.text || "";
+  setTimeout(()=>{
+    index = (index + 1) % slides.length;
+    showSlide();
+  }, s.duration * 1000);
+}
 
-    function showNext() {
-      img.src = ads[index].src;
-      setTimeout(() => {
-        index = (index + 1) % ads.length;
-        showNext();
-      }, ads[index].duration * 1000);
-    }
-
-    window.onload = showNext;
-  </script>
+window.onload = showSlide;
+</script>
 </body>
 </html>
