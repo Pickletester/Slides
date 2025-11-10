@@ -1,421 +1,86 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>GitHub Slides Player</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <title>LevelUp LED Ad Loop</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
-    body{background:#0f172a;color:#e5e7eb;height:100vh;display:flex;flex-direction:column;}
-    .app{display:flex;height:100%;}
-    .sidebar{width:340px;background:#020617;border-right:1px solid #1f2937;padding:16px;display:flex;flex-direction:column;gap:16px;}
-    .sidebar-header{display:flex;justify-content:space-between;align-items:center;}
-    .sidebar-title{font-size:1rem;font-weight:600;}
-    .button{border:none;padding:8px 12px;border-radius:999px;font-size:0.85rem;font-weight:500;cursor:pointer;background:#22c55e;color:#022c22;transition:transform .08s,background .12s;}
-    .button.small{padding:6px 10px;font-size:0.78rem;}
-    .button.secondary{background:#111827;color:#e5e7eb;border:1px solid #374151;}
-    .button.danger{background:#b91c1c;color:#fee2e2;}
-    .button:active{transform:scale(0.97);}
-    .slides-list{flex:1;border-radius:12px;border:1px solid #1f2937;background:radial-gradient(circle at top left,#111827,#020617);padding:8px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;}
-    .slide-item{padding:8px 10px;border-radius:10px;border:1px solid transparent;background:rgba(15,23,42,0.9);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:0.8rem;transition:background .12s,border-color .12s;}
-    .slide-item:hover{background:rgba(30,64,175,0.4);}
-    .slide-item.active{border-color:#38bdf8;background:rgba(37,99,235,0.45);}
-    .form-section{border-radius:12px;border:1px solid #1f2937;padding:10px;background:#020617;display:flex;flex-direction:column;gap:8px;font-size:0.82rem;}
-    .form-row{display:flex;flex-direction:column;gap:4px;}
-    label{font-size:0.75rem;color:#9ca3af;}
-    input[type=text],input[type=number],input[type=color],textarea{border-radius:8px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:6px 8px;font-size:0.8rem;}
-    textarea{min-height:60px;resize:vertical;}
-    .form-row-inline{display:flex;gap:8px;}
-    .form-row-inline>div{flex:1;}
-    .viewer{flex:1;display:flex;flex-direction:column;padding:16px;gap:10px;}
-    .viewer-header{display:flex;justify-content:space-between;align-items:center;}
-    .viewer-title{font-size:0.95rem;font-weight:500;opacity:0.9;}
-    .viewer-controls{display:flex;gap:8px;flex-wrap:wrap;}
-    .slide-preview-wrapper{flex:1;border-radius:18px;border:1px solid #1f2937;background:#020617;overflow:hidden;display:flex;align-items:stretch;justify-content:center;padding:8px;}
-    .slide-preview{width:100%;height:100%;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;padding:24px;background-size:cover;background-position:center;}
-    .slide-inner{max-width:100%;max-height:100%;display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;}
-    .slide-text-block{display:flex;flex-direction:column;gap:12px;text-shadow:0 2px 6px rgba(0,0,0,0.5);}
-    .slide-title{font-size:clamp(1.4rem,2.3vw,2rem);font-weight:700;}
-    .slide-body{font-size:clamp(0.9rem,1.2vw,1.05rem);line-height:1.4;}
-    .slide-image-block img{max-width:100%;max-height:60vh;border-radius:16px;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,0.45);}
-    .no-slide{font-size:0.9rem;opacity:0.7;}
-    .hidden{display:none!important;}
-    @media(max-width:900px){
-      .app{flex-direction:column;}
-      .sidebar{width:100%;height:280px;}
-      .slide-inner{grid-template-columns:1fr;}
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    #wrapper {
+      width: 864px;
+      height: 384px;
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+    }
+    #slide {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
   </style>
 </head>
 <body>
-  <div class="app">
-    <!-- EDITOR SIDEBAR -->
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-title">Slides</div>
-        <button class="button small" id="addSlideBtn">+ Add Slide</button>
-      </div>
-      <div class="slides-list" id="slidesList"></div>
-
-      <div class="form-section" id="editorSection">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <span style="font-size:0.8rem;opacity:0.8;">Slide Settings</span>
-          <button class="button small danger" id="deleteSlideBtn">Delete</button>
-        </div>
-
-        <div class="form-row">
-          <label for="slideTitle">Title (optional, for your reference)</label>
-          <input id="slideTitle" type="text" placeholder="Slide title" />
-        </div>
-
-        <div class="form-row">
-          <label for="slideBody">Body Text (optional)</label>
-          <textarea id="slideBody" placeholder="Text overlay (not required)"></textarea>
-        </div>
-
-        <div class="form-row">
-          <label for="slideImage">Image URL (PNG/JPG on GitHub Pages)</label>
-          <input id="slideImage" type="text" placeholder="https://yourname.github.io/repo/ads/ad1.png" />
-        </div>
-
-        <div class="form-row-inline">
-          <div>
-            <label for="slideBg">Background color (if no image)</label>
-            <input type="color" id="slideBg" value="#0f172a" />
-          </div>
-          <div>
-            <label for="slideDuration">Duration (seconds)</label>
-            <input type="number" id="slideDuration" min="1" value="8" />
-          </div>
-        </div>
-      </div>
-    </aside>
-
-    <!-- VIEWER / PLAYER -->
-    <main class="viewer">
-      <div class="viewer-header" id="viewerHeader">
-        <div class="viewer-title">Slide Preview / Player</div>
-        <div class="viewer-controls">
-          <button class="button secondary small" id="prevSlideBtn">&#9664; Prev</button>
-          <button class="button small" id="playPauseBtn">▶ Start</button>
-          <button class="button secondary small" id="nextSlideBtn">Next &#9654;</button>
-          <button class="button secondary small" id="loopToggleBtn">Loop: On</button>
-          <button class="button secondary small" id="viewerModeBtn">Viewer Mode</button>
-        </div>
-      </div>
-
-      <div class="slide-preview-wrapper">
-        <div class="slide-preview" id="slidePreview">
-          <div class="no-slide" id="noSlideMessage">No slides yet. Click + Add Slide.</div>
-          <div class="slide-inner hidden" id="slideInner">
-            <div class="slide-text-block">
-              <div class="slide-title" id="previewTitle"></div>
-              <div class="slide-body" id="previewBody"></div>
-            </div>
-            <div class="slide-image-block" id="previewImageBlock">
-              <img id="previewImage" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
+  <div id="wrapper">
+    <img id="slide" src="" alt="Ad Slide" />
   </div>
 
   <script>
-    // Slides are stored in localStorage in the browser you edit on.
-    const STORAGE_KEY = "githubSlides_v1";
-
-    let slides = [];
-    let currentIndex = -1;
-    let isPlaying = false;
-    let timer = null;
-    let isLooping = true;
-    let viewerMode = false;
-
-    const $ = id => document.getElementById(id);
-
-    const slidesListEl = $("slidesList");
-    const addSlideBtn = $("addSlideBtn");
-    const deleteSlideBtn = $("deleteSlideBtn");
-
-    const slideTitleInput = $("slideTitle");
-    const slideBodyInput = $("slideBody");
-    const slideImageInput = $("slideImage");
-    const slideBgInput = $("slideBg");
-    const slideDurationInput = $("slideDuration");
-
-    const slidePreviewEl = $("slidePreview");
-    const slideInnerEl = $("slideInner");
-    const noSlideMessageEl = $("noSlideMessage");
-    const previewTitleEl = $("previewTitle");
-    const previewBodyEl = $("previewBody");
-    const previewImageBlockEl = $("previewImageBlock");
-    const previewImageEl = $("previewImage");
-
-    const playPauseBtn = $("playPauseBtn");
-    const prevSlideBtn = $("prevSlideBtn");
-    const nextSlideBtn = $("nextSlideBtn");
-    const loopToggleBtn = $("loopToggleBtn");
-    const viewerModeBtn = $("viewerModeBtn");
-    const sidebarEl = $("sidebar");
-    const viewerHeaderEl = $("viewerHeader");
-
-    function loadSlides() {
-      try {
-        const raw = localStorage.getItem(STORAGE_KEY);
-        if (!raw) return;
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) slides = parsed;
-      } catch (e) {
-        console.warn("Failed to load slides", e);
+    const slides = [
+      {
+        url: "https://YOURUSERNAME.github.io/YOURREPO/logo[67].png", // 30s ad
+        durationMs: 30000
+      },
+      {
+        url: "https://YOURUSERNAME.github.io/YOURREPO/SCG_Level%20Up%20Pickleball_MissionMovement_845x314.png", // 10s
+        durationMs: 10000
+      },
+      {
+        url: "https://YOURUSERNAME.github.io/YOURREPO/Lifeline%20Physical%20Therapy_Aches-and-Pains_Sept25.png", // 10s
+        durationMs: 10000
+      },
+      {
+        url: "https://YOURUSERNAME.github.io/YOURREPO/Kitchen%20Play%208.png", // 10s
+        durationMs: 10000
+      },
+      {
+        url: "https://YOURUSERNAME.github.io/YOURREPO/Digital%20Billboard%20(15).png", // 10s
+        durationMs: 10000
+      },
+      {
+        url: "https://YOURUSERNAME.github.io/YOURREPO/Comcast%20CB_LevelUp-PickleBall_Sponsor-ENT_LED-Sign_845x314_10.25_Final.png", // 10s
+        durationMs: 10000
+      },
+      {
+        url: "https://YOURUSERNAME.github.io/YOURREPO/2025-09-23%20Eber%20Insurance-2[75].png", // 10s
+        durationMs: 10000
       }
+    ];
+
+    const img = document.getElementById("slide");
+    let index = 0;
+
+    function showSlide() {
+      const slide = slides[index];
+      img.src = slide.url;
+      setTimeout(() => {
+        index = (index + 1) % slides.length;
+        showSlide();
+      }, slide.durationMs);
     }
 
-    function saveSlides() {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(slides));
-      } catch (e) {
-        console.warn("Failed to save slides", e);
-      }
-    }
-
-    function renderSlidesList() {
-      slidesListEl.innerHTML = "";
-      if (slides.length === 0) {
-        slidesListEl.innerHTML = '<div style="font-size:.8rem;opacity:.7;">No slides yet.</div>';
-        return;
-      }
-      slides.forEach((s, i) => {
-        const item = document.createElement("div");
-        item.className = "slide-item" + (i === currentIndex ? " active" : "");
-        const label = s.title || "(Untitled)";
-        const dur = s.duration || 0;
-        item.textContent = `${i + 1}. ${label} (${dur}s)`;
-        item.onclick = () => selectSlide(i);
-        slidesListEl.appendChild(item);
-      });
-    }
-
-    function renderSlidePreview() {
-      if (currentIndex < 0 || slides.length === 0) {
-        noSlideMessageEl.classList.remove("hidden");
-        slideInnerEl.classList.add("hidden");
-        slidePreviewEl.style.background = "#020617";
-        return;
-      }
-
-      const s = slides[currentIndex];
-      noSlideMessageEl.classList.add("hidden");
-      slideInnerEl.classList.remove("hidden");
-
-      slidePreviewEl.style.background = s.bg || "#0f172a";
-      previewTitleEl.textContent = s.title || "";
-      previewBodyEl.textContent = s.body || "";
-
-      if (s.imageUrl && s.imageUrl.trim() !== "") {
-        previewImageBlockEl.classList.remove("hidden");
-        previewImageEl.src = s.imageUrl.trim();
-      } else {
-        previewImageBlockEl.classList.add("hidden");
-        previewImageEl.removeAttribute("src");
-      }
-    }
-
-    function updateEditorFromCurrent() {
-      if (currentIndex < 0 || currentIndex >= slides.length) {
-        slideTitleInput.value = "";
-        slideBodyInput.value = "";
-        slideImageInput.value = "";
-        slideBgInput.value = "#0f172a";
-        slideDurationInput.value = 8;
-        return;
-      }
-      const s = slides[currentIndex];
-      slideTitleInput.value = s.title || "";
-      slideBodyInput.value = s.body || "";
-      slideImageInput.value = s.imageUrl || "";
-      slideBgInput.value = s.bg || "#0f172a";
-      slideDurationInput.value = s.duration || 8;
-    }
-
-    function selectSlide(index) {
-      if (index < 0 || index >= slides.length) return;
-      currentIndex = index;
-      renderSlidesList();
-      updateEditorFromCurrent();
-      renderSlidePreview();
-    }
-
-    function addSlide() {
-      slides.push({
-        title: "New Slide",
-        body: "",
-        imageUrl: "",
-        bg: "#0f172a",
-        duration: 8
-      });
-      currentIndex = slides.length - 1;
-      saveSlides();
-      renderSlidesList();
-      updateEditorFromCurrent();
-      renderSlidePreview();
-    }
-
-    function deleteCurrentSlide() {
-      if (currentIndex < 0 || currentIndex >= slides.length) return;
-      slides.splice(currentIndex, 1);
-      if (slides.length === 0) {
-        currentIndex = -1;
-      } else if (currentIndex >= slides.length) {
-        currentIndex = slides.length - 1;
-      }
-      saveSlides();
-      renderSlidesList();
-      updateEditorFromCurrent();
-      renderSlidePreview();
-    }
-
-    function updateCurrentSlideFromEditor() {
-      if (currentIndex < 0 || currentIndex >= slides.length) return;
-      const s = slides[currentIndex];
-      s.title = slideTitleInput.value || "";
-      s.body = slideBodyInput.value || "";
-      s.imageUrl = slideImageInput.value || "";
-      s.bg = slideBgInput.value || "#0f172a";
-      let d = parseInt(slideDurationInput.value, 10);
-      if (isNaN(d) || d <= 0) d = 5;
-      s.duration = d;
-      saveSlides();
-      renderSlidesList();
-      renderSlidePreview();
-    }
-
-    function stopSlideshow() {
-      isPlaying = false;
-      if (timer) {
-        clearTimeout(timer);
-        timer = null;
-      }
-      playPauseBtn.textContent = "▶ Start";
-    }
-
-    function scheduleNext() {
-      if (!isPlaying) return;
-      if (currentIndex < 0 || currentIndex >= slides.length) return;
-      const s = slides[currentIndex];
-      const dur = (s.duration || 5) * 1000;
-      if (timer) clearTimeout(timer);
-      timer = setTimeout(() => {
-        if (!isPlaying) return;
-        goNext(true);
-      }, dur);
-    }
-
-    function startSlideshow() {
-      if (slides.length === 0) return;
-      if (currentIndex < 0 || currentIndex >= slides.length) currentIndex = 0;
-      isPlaying = true;
-      playPauseBtn.textContent = "⏸ Pause";
-      renderSlidesList();
-      renderSlidePreview();
-      scheduleNext();
-    }
-
-    function togglePlayPause() {
-      if (isPlaying) {
-        stopSlideshow();
-      } else {
-        startSlideshow();
-      }
-    }
-
-    function goPrev(manual=false) {
-      if (slides.length === 0) return;
-      if (manual) stopSlideshow();
-      currentIndex = (currentIndex - 1 + slides.length) % slides.length;
-      renderSlidesList();
-      renderSlidePreview();
-      if (!manual && isPlaying) scheduleNext();
-    }
-
-    function goNext(auto=false) {
-      if (slides.length === 0) return;
-      if (!auto) stopSlideshow();
-      let nextIndex = currentIndex + 1;
-      if (nextIndex >= slides.length) {
-        if (isLooping) nextIndex = 0;
-        else { stopSlideshow(); return; }
-      }
-      currentIndex = nextIndex;
-      renderSlidesList();
-      renderSlidePreview();
-      if (auto && isPlaying) scheduleNext();
-    }
-
-    function toggleLoop() {
-      isLooping = !isLooping;
-      loopToggleBtn.textContent = "Loop: " + (isLooping ? "On" : "Off");
-    }
-
-    function setViewerMode(on) {
-      viewerMode = on;
-      if (on) {
-        sidebarEl.classList.add("hidden");
-        viewerHeaderEl.classList.add("hidden");
-      } else {
-        sidebarEl.classList.remove("hidden");
-        viewerHeaderEl.classList.remove("hidden");
-      }
-      viewerModeBtn.textContent = on ? "Editor Mode" : "Viewer Mode";
-    }
-
-    function toggleViewerMode() {
-      setViewerMode(!viewerMode);
-    }
-
-    // Event listeners
-    addSlideBtn.onclick = addSlide;
-    deleteSlideBtn.onclick = deleteCurrentSlide;
-
-    slideTitleInput.oninput = updateCurrentSlideFromEditor;
-    slideBodyInput.oninput = updateCurrentSlideFromEditor;
-    slideImageInput.oninput = updateCurrentSlideFromEditor;
-    slideBgInput.oninput = updateCurrentSlideFromEditor;
-    slideDurationInput.oninput = updateCurrentSlideFromEditor;
-
-    playPauseBtn.onclick = togglePlayPause;
-    prevSlideBtn.onclick = () => goPrev(true);
-    nextSlideBtn.onclick = () => goNext(false);
-    loopToggleBtn.onclick = toggleLoop;
-    viewerModeBtn.onclick = toggleViewerMode;
-
-    window.addEventListener("keydown", e => {
-      if (viewerMode) {
-        if (e.code === "ArrowLeft") goPrev(true);
-        if (e.code === "ArrowRight") goNext(false);
-        if (e.code === "Space") { e.preventDefault(); togglePlayPause(); }
-      }
-    });
-
-    function init() {
-      loadSlides();
-      if (slides.length > 0) currentIndex = 0;
-      renderSlidesList();
-      updateEditorFromCurrent();
-      renderSlidePreview();
-
-      const params = new URLSearchParams(window.location.search);
-      const view = params.get("view");
-      if (view === "1" || view === "true") {
-        setViewerMode(true);
-        if (slides.length > 0) {
-          currentIndex = 0;
-          startSlideshow();
-        }
-      }
-    }
-
-    document.addEventListener("DOMContentLoaded", init);
+    window.onload = showSlide;
   </script>
 </body>
 </html>
