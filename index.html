@@ -1,182 +1,57 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Simple Slides Player</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;}
-    body{background:#0f172a;color:#e5e7eb;height:100vh;display:flex;flex-direction:column;}
-    .app{display:flex;height:100%;}
-    .sidebar{width:340px;background:#020617;border-right:1px solid #1f2937;padding:16px;display:flex;flex-direction:column;gap:16px;}
-    .sidebar-header{display:flex;justify-content:space-between;align-items:center;}
-    .sidebar-title{font-size:1rem;font-weight:600;}
-    .button{border:none;padding:8px 12px;border-radius:999px;font-size:0.85rem;font-weight:500;cursor:pointer;background:#22c55e;color:#022c22;transition:transform .08s,background .12s;}
-    .button.small{padding:6px 10px;font-size:0.78rem;}
-    .button.secondary{background:#111827;color:#e5e7eb;border:1px solid #374151;}
-    .button.danger{background:#b91c1c;color:#fee2e2;}
-    .button:active{transform:scale(0.97);}
-    .slides-list{flex:1;border-radius:12px;border:1px solid #1f2937;background:radial-gradient(circle at top left,#111827,#020617);padding:8px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;}
-    .slide-item{padding:8px 10px;border-radius:10px;border:1px solid transparent;background:rgba(15,23,42,0.9);cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:0.8rem;transition:background .12s,border-color .12s;}
-    .slide-item:hover{background:rgba(30,64,175,0.4);}
-    .slide-item.active{border-color:#38bdf8;background:rgba(37,99,235,0.45);}
-    .form-section{border-radius:12px;border:1px solid #1f2937;padding:10px;background:#020617;display:flex;flex-direction:column;gap:8px;font-size:0.82rem;}
-    .form-row{display:flex;flex-direction:column;gap:4px;}
-    label{font-size:0.75rem;color:#9ca3af;}
-    input[type=text],input[type=number],input[type=color],textarea{border-radius:8px;border:1px solid #374151;background:#020617;color:#e5e7eb;padding:6px 8px;font-size:0.8rem;}
-    textarea{min-height:60px;resize:vertical;}
-    .form-row-inline{display:flex;gap:8px;}
-    .form-row-inline>div{flex:1;}
-    .viewer{flex:1;display:flex;flex-direction:column;padding:16px;gap:10px;}
-    .viewer-header{display:flex;justify-content:space-between;align-items:center;}
-    .viewer-title{font-size:0.95rem;font-weight:500;opacity:0.9;}
-    .viewer-controls{display:flex;gap:8px;flex-wrap:wrap;}
-    .slide-preview-wrapper{flex:1;border-radius:18px;border:1px solid #1f2937;background:#020617;overflow:hidden;display:flex;align-items:stretch;justify-content:center;padding:8px;}
-    .slide-preview{width:100%;height:100%;border-radius:14px;overflow:hidden;display:flex;align-items:center;justify-content:center;position:relative;padding:24px;background-size:cover;background-position:center;}
-    .slide-inner{max-width:100%;max-height:100%;display:grid;grid-template-columns:1.1fr 1fr;gap:24px;align-items:center;}
-    .slide-text-block{display:flex;flex-direction:column;gap:12px;text-shadow:0 2px 6px rgba(0,0,0,0.5);}
-    .slide-title{font-size:clamp(1.4rem,2.3vw,2rem);font-weight:700;}
-    .slide-body{font-size:clamp(0.9rem,1.2vw,1.05rem);line-height:1.4;}
-    .slide-image-block img{max-width:100%;max-height:60vh;border-radius:16px;object-fit:cover;box-shadow:0 10px 30px rgba(0,0,0,0.45);}
-    .no-slide{font-size:0.9rem;opacity:0.7;}
-    .hidden{display:none!important;}
-  </style>
+<meta charset="UTF-8">
+<title>Offline Ad Loop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  html,body {
+    margin:0; padding:0; width:100%; height:100%;
+    background:#000; overflow:hidden;
+  }
+  #slideshow {
+    width:864px; height:384px;
+    display:flex; justify-content:center; align-items:center;
+    margin:auto; position:absolute; top:0; left:0; right:0; bottom:0;
+  }
+  img {
+    width:100%; height:100%; object-fit:cover;
+  }
+</style>
 </head>
 <body>
-  <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <div class="sidebar-title">Slides</div>
-        <button class="button small" id="addSlideBtn">+ Add Slide</button>
-      </div>
-      <div class="slides-list" id="slidesList"></div>
-
-      <div class="form-section" id="editorSection">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
-          <span style="font-size:0.8rem;opacity:0.8;">Slide Settings</span>
-          <button class="button small danger" id="deleteSlideBtn">Delete</button>
-        </div>
-        <div class="form-row"><label>Title</label><input id="slideTitle" type="text"></div>
-        <div class="form-row"><label>Body</label><textarea id="slideBody"></textarea></div>
-        <div class="form-row">
-          <label>Image (upload or URL)</label>
-          <input type="file" id="slideUpload" accept="image/*" />
-          <input type="text" id="slideImage" placeholder="https://example.com/image.jpg" />
-        </div>
-        <div class="form-row-inline">
-          <div><label>Background</label><input type="color" id="slideBg" value="#0f172a"></div>
-          <div><label>Duration (s)</label><input type="number" id="slideDuration" min="1" value="8"></div>
-        </div>
-      </div>
-    </aside>
-
-    <main class="viewer">
-      <div class="viewer-header">
-        <div class="viewer-title">Slide Preview / Player</div>
-        <div class="viewer-controls">
-          <button class="button secondary small" id="prevSlideBtn">&#9664; Prev</button>
-          <button class="button small" id="playPauseBtn">▶ Start</button>
-          <button class="button secondary small" id="nextSlideBtn">Next &#9654;</button>
-          <button class="button secondary small" id="loopToggleBtn">Loop: On</button>
-          <button class="button secondary small" id="viewerModeBtn">Viewer Mode</button>
-        </div>
-      </div>
-
-      <div class="slide-preview-wrapper">
-        <div class="slide-preview" id="slidePreview">
-          <div class="no-slide" id="noSlideMessage">No slides yet. Click + Add Slide.</div>
-          <div class="slide-inner hidden" id="slideInner">
-            <div class="slide-text-block">
-              <div class="slide-title" id="previewTitle"></div>
-              <div class="slide-body" id="previewBody"></div>
-            </div>
-            <div class="slide-image-block" id="previewImageBlock">
-              <img id="previewImage" />
-            </div>
-          </div>
-        </div>
-      </div>
-    </main>
-  </div>
+  <div id="slideshow"><img id="adImage" src="" alt="Ad"></div>
 
   <script>
-    const KEY="simpleSlides_v3";
-    let slides=[],current=-1,isPlay=false,timer=null,isLoop=true,isView=false;
-    const E=id=>document.getElementById(id);
+    // ---- Replace or add new ads here ----
+    const ads = [
+      {
+        duration: 5,
+        src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAIAAADaO5y9AAAACXBIWXMAAAsTAAALEwEAmpwYAAABKElEQVR4nO3TsQkAIBAEwYf9d9bHclAgYZP7cL8BNkmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJPm2W0h4bSkAOAAAAABJRU5ErkJggg==" // gray placeholder
+      },
+      {
+        duration: 5,
+        src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAIAAADaO5y9AAAACXBIWXMAAAsTAAALEwEAmpwYAAABM0lEQVR4nO3TsQkAIBAEwYf9d9bHclAgYZP7cL8BNkmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJPm2W0h4bSkAOAAAAABJRU5ErkJggg==" // same placeholder
+      },
+      {
+        duration: 5,
+        src: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWgAAAFoCAIAAADaO5y9AAAACXBIWXMAAAsTAAALEwEAmpwYAAABOklEQVR4nO3TsQkAIBAEwYf9d9bHclAgYZP7cL8BNkmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJEmSJPm2W0h4bSkAOAAAAABJRU5ErkJggg==" // same placeholder
+      }
+    ];
 
-    function load(){slides=JSON.parse(localStorage.getItem(KEY)||"[]");}
-    function save(){localStorage.setItem(KEY,JSON.stringify(slides));}
+    // ---- Core player ----
+    let index = 0;
+    const img = document.getElementById("adImage");
 
-    function renderList(){
-      const list=E("slidesList");list.innerHTML="";
-      slides.forEach((s,i)=>{
-        const d=document.createElement("div");
-        d.className="slide-item"+(i===current?" active":"");
-        d.textContent=`${i+1}. ${s.title||"(Untitled)"} (${s.duration||0}s)`;
-        d.onclick=()=>sel(i);
-        list.appendChild(d);
-      });
-      if(!slides.length)list.innerHTML='<div style="font-size:.8rem;opacity:.7;">No slides yet.</div>';
+    function showNext() {
+      img.src = ads[index].src;
+      setTimeout(() => {
+        index = (index + 1) % ads.length;
+        showNext();
+      }, ads[index].duration * 1000);
     }
 
-    function renderPrev(){
-      const prev=E("slidePreview"),inner=E("slideInner"),msg=E("noSlideMessage");
-      if(current<0||!slides.length){msg.classList.remove("hidden");inner.classList.add("hidden");prev.style.background="#020617";return;}
-      const s=slides[current];msg.classList.add("hidden");inner.classList.remove("hidden");
-      prev.style.background=s.bg||"#0f172a";
-      E("previewTitle").textContent=s.title||"";E("previewBody").textContent=s.body||"";
-      const img=s.imageData||s.imageUrl;
-      if(img){E("previewImageBlock").classList.remove("hidden");E("previewImage").src=img;}
-      else E("previewImageBlock").classList.add("hidden");
-    }
-
-    function sel(i){current=i;renderList();updForm();renderPrev();}
-    function add(){slides.push({title:"New Slide",body:"",imageUrl:"",imageData:"",bg:"#0f172a",duration:8});
-      current=slides.length-1;save();renderList();updForm();renderPrev();}
-    function del(){if(current<0)return;slides.splice(current,1);current=Math.min(current,slides.length-1);save();renderList();updForm();renderPrev();}
-
-    function updForm(){
-      if(current<0)return;const s=slides[current];
-      E("slideTitle").value=s.title||"";E("slideBody").value=s.body||"";
-      E("slideImage").value=s.imageUrl||"";E("slideBg").value=s.bg||"#0f172a";E("slideDuration").value=s.duration||8;
-    }
-
-    function updSlide(){
-      if(current<0)return;const s=slides[current];
-      s.title=E("slideTitle").value;s.body=E("slideBody").value;
-      s.imageUrl=E("slideImage").value;s.bg=E("slideBg").value;
-      s.duration=parseInt(E("slideDuration").value)||5;save();renderList();renderPrev();
-    }
-
-    E("slideUpload").addEventListener("change",e=>{
-      const f=e.target.files[0];if(!f)return;const r=new FileReader();
-      r.onload=ev=>{if(current>=0){slides[current].imageData=ev.target.result;save();renderPrev();}};
-      r.readAsDataURL(f);
-    });
-
-    ["slideTitle","slideBody","slideImage","slideBg","slideDuration"].forEach(id=>E(id).addEventListener("input",updSlide));
-    E("addSlideBtn").onclick=add;E("deleteSlideBtn").onclick=del;
-
-    function next(){if(!slides.length)return;current=(current+1)%slides.length;renderList();renderPrev();}
-    function prev(){if(!slides.length)return;current=(current-1+slides.length)%slides.length;renderList();renderPrev();}
-    function play(){
-      if(!slides.length)return;isPlay=true;E("playPauseBtn").textContent="⏸ Pause";
-      clearTimeout(timer);const dur=(slides[current].duration||5)*1000;
-      timer=setTimeout(()=>{if(!isPlay)return;next();play();},dur);
-    }
-    function pause(){isPlay=false;clearTimeout(timer);E("playPauseBtn").textContent="▶ Start";}
-    E("playPauseBtn").onclick=()=>{isPlay?pause():(current<0&&(current=0),play());};
-    E("nextSlideBtn").onclick=()=>{pause();next();};
-    E("prevSlideBtn").onclick=()=>{pause();prev();};
-    E("loopToggleBtn").onclick=()=>{isLoop=!isLoop;E("loopToggleBtn").textContent="Loop: "+(isLoop?"On":"Off");};
-    E("viewerModeBtn").onclick=()=>{isView=!isView;E("sidebar").classList.toggle("hidden",isView);
-      E("viewerModeBtn").textContent=isView?"Editor Mode":"Viewer Mode";};
-
-    function init(){
-      load();if(slides.length)current=0;renderList();updForm();renderPrev();
-      if(new URLSearchParams(location.search).get("view")==="1"){isView=true;E("sidebar").classList.add("hidden");play();}
-    }
-    init();
+    window.onload = showNext;
   </script>
 </body>
 </html>
