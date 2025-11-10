@@ -28,8 +28,8 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: opacity 1s ease-in-out;
       opacity: 1;
+      transition: opacity 1s ease-in-out;
     }
   </style>
 </head>
@@ -52,22 +52,23 @@
     const img = document.getElementById("slide");
     let index = 0;
 
-    function showSlide() {
+    function nextSlide() {
       img.style.opacity = 0;
       setTimeout(() => {
-        img.src = slides[index].url;
-        img.onload = () => {
-          img.style.opacity = 1;
-        };
-      }, 500);
-
-      setTimeout(() => {
         index = (index + 1) % slides.length;
-        showSlide();
+        img.src = slides[index].url;
+        img.style.opacity = 1;
+      }, 1000); // fade delay before showing next
+    }
+
+    function startLoop() {
+      img.src = slides[index].url;
+      setInterval(() => {
+        nextSlide();
       }, slides[index].durationMs);
     }
 
-    window.onload = showSlide;
+    window.onload = startLoop;
   </script>
 </body>
 </html>
