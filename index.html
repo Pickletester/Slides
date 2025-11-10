@@ -52,23 +52,26 @@
     const img = document.getElementById("slide");
     let index = 0;
 
-    function nextSlide() {
+    function showSlide() {
+      // Fade out current image
       img.style.opacity = 0;
+
+      // After fade, change image and fade back in
+      setTimeout(() => {
+        img.src = slides[index].url;
+        img.onload = () => {
+          img.style.opacity = 1;
+        };
+      }, 1000);
+
+      // Schedule next slide after its duration
       setTimeout(() => {
         index = (index + 1) % slides.length;
-        img.src = slides[index].url;
-        img.style.opacity = 1;
-      }, 1000); // fade delay before showing next
-    }
-
-    function startLoop() {
-      img.src = slides[index].url;
-      setInterval(() => {
-        nextSlide();
+        showSlide(); // Recursive loop forever
       }, slides[index].durationMs);
     }
 
-    window.onload = startLoop;
+    window.onload = showSlide;
   </script>
 </body>
 </html>
