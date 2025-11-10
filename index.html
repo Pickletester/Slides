@@ -1,17 +1,71 @@
-<script>
-const slides = [
-  { url:"https://pickletester.github.io/Slides/logo%5B67%5D.jpg",durationMs:30000},
-  { url:"https://pickletester.github.io/Slides/SCG_Level%20Up%20Pickleball_MissionMovement_845x314.jpg",durationMs:10000},
-  { url:"https://pickletester.github.io/Slides/Lifeline%20Physical%20Therapy_Aches-and-Pains_Sept25.jpg",durationMs:10000},
-  { url:"https://pickletester.github.io/Slides/Kitchen%20Play%208.jpg",durationMs:10000},
-  { url:"https://pickletester.github.io/Slides/Digital%20Billboard%20(15).png",durationMs:10000},
-  { url:"https://pickletester.github.io/Slides/Comcast%20CB_LevelUp-PickleBall_Sponsor-ENT_LED-Sign_845x314_10.25_Final.jpg",durationMs:10000},
-  { url:"https://pickletester.github.io/Slides/2025-09-23%20Eber%20Insurance-2%5B75%5D.jpg",durationMs:10000}
-];
-let i=0;const img=document.getElementById("slide");
-function loop(){
-  img.src=slides[i].url;
-  setTimeout(()=>{i=(i+1)%slides.length;loop();},slides[i].durationMs);
-}
-window.onload=loop;
-</script>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LevelUp LED Ad Loop (TB1 Compatible)</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+    }
+    #wrapper {
+      width: 864px;
+      height: 384px;
+      position: absolute;
+      top: 0; bottom: 0; left: 0; right: 0;
+      margin: auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #000;
+    }
+    #slide {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div id="wrapper">
+    <img id="slide" src="" alt="Ad Slide" />
+  </div>
+
+  <script>
+    // Simple, TB1-safe slideshow (no transitions, no complex recursion)
+    var slides = [
+      { url: "https://pickletester.github.io/Slides/logo%5B67%5D.jpg", duration: 30000 },
+      { url: "https://pickletester.github.io/Slides/SCG_Level%20Up%20Pickleball_MissionMovement_845x314.jpg", duration: 10000 },
+      { url: "https://pickletester.github.io/Slides/Lifeline%20Physical%20Therapy_Aches-and-Pains_Sept25.jpg", duration: 10000 },
+      { url: "https://pickletester.github.io/Slides/Kitchen%20Play%208.jpg", duration: 10000 },
+      { url: "https://pickletester.github.io/Slides/Digital%20Billboard%20(15).png", duration: 10000 },
+      { url: "https://pickletester.github.io/Slides/Comcast%20CB_LevelUp-PickleBall_Sponsor-ENT_LED-Sign_845x314_10.25_Final.jpg", duration: 10000 },
+      { url: "https://pickletester.github.io/Slides/2025-09-23%20Eber%20Insurance-2%5B75%5D.jpg", duration: 10000 }
+    ];
+
+    var img = document.getElementById("slide");
+    var i = 0;
+
+    function nextSlide() {
+      if (i >= slides.length) i = 0; // loop
+      img.src = slides[i].url;
+      var delay = slides[i].duration;
+      i++;
+      setTimeout(nextSlide, delay);
+    }
+
+    // reload every 2 hours to keep memory clean
+    setTimeout(function() {
+      location.reload(true);
+    }, 2 * 60 * 60 * 1000);
+
+    window.onload = nextSlide;
+  </script>
+</body>
+</html>
