@@ -1,16 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- YOUR AD CONFIGURATION ---
+    // This list uses the new, simple filenames.
+    // Make sure your files on GitHub are renamed to match!
 
-    // Your list of ads and their durations in milliseconds (1000ms = 1 second)
     const adPlaylist = [
-        { file: 'logo[67].jpg', duration: 30000 }, // 30 seconds
-        { file: 'SCG_Level Up Pickleball_MissionMovement_845x314.jpg', duration: 10000 }, // 10 seconds
-        { file: 'Lifeline Physical Therapy_Aches-and-Pains_Sept25.png', duration: 10000 }, // 10 seconds
-        { file: 'Kitchen Play 8.jpg', duration: 10000 }, // 10 seconds
-        { file: 'Digital Billboard (15).png', duration: 10000 }, // 10 seconds
-        { file: 'Comcast CB_LevelUp-PickleBall_Sponsor-ENT_LED-Sign_845x314_10.25_Final.jpg', duration: 10000 }, // 10 seconds
-        { file: '2025-09-23 Eber Insurance-2[75].jpg', duration: 10000 }  // 10 seconds
+        // Original: logo[67].jpg
+        { file: 'ad1.jpg', duration: 30000 }, // 30 seconds
+        
+        // Original: SCG_Level Up Pickleball_MissionMovement_845x314.jpg
+        { file: 'ad2.jpg', duration: 10000 }, // 10 seconds
+        
+        // Original: Lifeline Physical Therapy_Aches-and-Pains_Sept25.png
+        { file: 'ad3.png', duration: 10000 }, // 10 seconds
+        
+        // Original: Kitchen Play 8.jpg
+        { file: 'ad4.jpg', duration: 10000 }, // 10 seconds
+        
+        // Original: Digital Billboard (15).png
+        { file: 'ad5.png', duration: 10000 }, // 10 seconds
+        
+        // Original: Comcast CB_LevelUp-PickleBall...Final.jpg
+        { file: 'ad6.jpg', duration: 10000 }, // 10 seconds
+        
+        // Original: 2025-09-23 Eber Insurance-2[75].jpg
+        { file: 'ad7.jpg', duration: 10000 }  // 10 seconds
     ];
 
     // --- END CONFIGURATION ---
